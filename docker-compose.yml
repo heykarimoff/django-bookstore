@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  web:
+    image: bookstore:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    environment:
+      - SECRET_KEY=-!%+c%8uq9r#hpj3)2c_-n8nj7#*7+v+t(%-ks9(qj3mbq6f)=
+      - DATABASE_URL=postgres://postgres:postgres@database:5432/bookstore
+      - DJANGO_SETTINGS_MODULE=bookstore.settings.local
+    depends_on:
+      - database
+
+  database:
+    image: postgres:10.7-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bookstore
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+
+volumes:
+  pgdata:
+    driver: local
